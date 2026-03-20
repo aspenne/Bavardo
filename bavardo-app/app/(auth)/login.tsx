@@ -1,6 +1,4 @@
-import { Button } from '@/components/ui/Button';
-import { Container } from '@/components/layout/Container';
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
   KeyboardAvoidingView,
@@ -11,13 +9,18 @@ import {
   View,
 } from 'react-native';
 
+import { Container } from '@/components/layout/Container';
+import { Button } from '@/components/ui/Button';
+
 export default function Login() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
     // TODO: Implement login logic
     console.log('Login with:', email, password);
+    router.replace('/home');
   };
 
   return (
@@ -29,8 +32,11 @@ export default function Login() {
           <View className="flex-1 justify-center">
             {/* Logo/Title */}
             <View className="mb-2xl items-center">
+              <View className="mb-md h-20 w-20 items-center justify-center rounded-full bg-primary/10">
+                <Text className="text-5xl">🐢</Text>
+              </View>
               <Text className="mb-sm text-4xl font-bold text-primary">Bavardo</Text>
-              <Text className="text-base text-gray-600">Welcome back!</Text>
+              <Text className="text-base text-secondary">Bon retour !</Text>
             </View>
 
             {/* Login Form */}
@@ -40,7 +46,7 @@ export default function Login() {
                 <Text className="mb-sm text-sm font-semibold text-gray-700">Email</Text>
                 <TextInput
                   className="rounded-md border border-gray-300 bg-white px-md py-md text-base"
-                  placeholder="Enter your email"
+                  placeholder="Entrez votre email"
                   placeholderTextColor="#9E9E9E"
                   value={email}
                   onChangeText={setEmail}
@@ -52,10 +58,10 @@ export default function Login() {
 
               {/* Password Input */}
               <View>
-                <Text className="mb-sm text-sm font-semibold text-gray-700">Password</Text>
+                <Text className="mb-sm text-sm font-semibold text-gray-700">Mot de passe</Text>
                 <TextInput
                   className="rounded-md border border-gray-300 bg-white px-md py-md text-base"
-                  placeholder="Enter your password"
+                  placeholder="Entrez votre mot de passe"
                   placeholderTextColor="#9E9E9E"
                   value={password}
                   onChangeText={setPassword}
@@ -66,13 +72,17 @@ export default function Login() {
               </View>
 
               {/* Forgot Password */}
-              <TouchableOpacity>
-                <Text className="text-right text-sm text-secondary">Forgot password?</Text>
-              </TouchableOpacity>
+              <Link href="/forgot-password" asChild>
+                <TouchableOpacity>
+                  <Text className="text-right text-sm font-semibold text-accent">
+                    Mot de passe oublié ?
+                  </Text>
+                </TouchableOpacity>
+              </Link>
 
               {/* Login Button */}
               <Button
-                title="Login"
+                title="Se connecter"
                 variant="primary"
                 size="lg"
                 onPress={handleLogin}
@@ -82,16 +92,16 @@ export default function Login() {
               {/* Divider */}
               <View className="my-lg flex-row items-center">
                 <View className="h-[1px] flex-1 bg-gray-300" />
-                <Text className="mx-md text-gray-500">or</Text>
+                <Text className="mx-md text-gray-500">ou</Text>
                 <View className="h-[1px] flex-1 bg-gray-300" />
               </View>
 
               {/* Sign Up Link */}
               <View className="flex-row justify-center">
-                <Text className="text-gray-600">Don&apos;t have an account? </Text>
+                <Text className="text-gray-600">Pas encore de compte ? </Text>
                 <Link href="/signup" asChild>
                   <TouchableOpacity>
-                    <Text className="font-semibold text-accent">Sign up</Text>
+                    <Text className="font-semibold text-accent">S&apos;inscrire</Text>
                   </TouchableOpacity>
                 </Link>
               </View>

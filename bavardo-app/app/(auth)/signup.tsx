@@ -1,5 +1,3 @@
-import { Button } from '@/components/ui/Button';
-import { Container } from '@/components/layout/Container';
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -12,6 +10,9 @@ import {
   View,
 } from 'react-native';
 
+import { Container } from '@/components/layout/Container';
+import { Button } from '@/components/ui/Button';
+
 export default function SignUp() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -22,7 +23,7 @@ export default function SignUp() {
   const handleSignUp = () => {
     // TODO: Implement signup logic
     if (password !== confirmPassword) {
-      console.log('Passwords do not match');
+      console.log('Les mots de passe ne correspondent pas');
       return;
     }
     console.log('Sign up with:', name, email, password);
@@ -39,18 +40,21 @@ export default function SignUp() {
             <View className="flex-1 justify-center py-xl">
               {/* Logo/Title */}
               <View className="mb-xl items-center">
+                <View className="mb-md h-20 w-20 items-center justify-center rounded-full bg-primary/10">
+                  <Text className="text-5xl">🐢</Text>
+                </View>
                 <Text className="mb-sm text-4xl font-bold text-primary">Bavardo</Text>
-                <Text className="text-base text-gray-600">Create your account</Text>
+                <Text className="text-base text-secondary">Créez votre compte</Text>
               </View>
 
               {/* Sign Up Form */}
               <View className="gap-md">
                 {/* Name Input */}
                 <View>
-                  <Text className="mb-sm text-sm font-semibold text-gray-700">Full Name</Text>
+                  <Text className="mb-sm text-sm font-semibold text-gray-700">Nom complet</Text>
                   <TextInput
                     className="rounded-md border border-gray-300 bg-white px-md py-md text-base"
-                    placeholder="Enter your full name"
+                    placeholder="Entrez votre nom complet"
                     placeholderTextColor="#9E9E9E"
                     value={name}
                     onChangeText={setName}
@@ -64,7 +68,7 @@ export default function SignUp() {
                   <Text className="mb-sm text-sm font-semibold text-gray-700">Email</Text>
                   <TextInput
                     className="rounded-md border border-gray-300 bg-white px-md py-md text-base"
-                    placeholder="Enter your email"
+                    placeholder="Entrez votre email"
                     placeholderTextColor="#9E9E9E"
                     value={email}
                     onChangeText={setEmail}
@@ -76,10 +80,10 @@ export default function SignUp() {
 
                 {/* Password Input */}
                 <View>
-                  <Text className="mb-sm text-sm font-semibold text-gray-700">Password</Text>
+                  <Text className="mb-sm text-sm font-semibold text-gray-700">Mot de passe</Text>
                   <TextInput
                     className="rounded-md border border-gray-300 bg-white px-md py-md text-base"
-                    placeholder="Create a password"
+                    placeholder="Créez un mot de passe"
                     placeholderTextColor="#9E9E9E"
                     value={password}
                     onChangeText={setPassword}
@@ -92,11 +96,11 @@ export default function SignUp() {
                 {/* Confirm Password Input */}
                 <View>
                   <Text className="mb-sm text-sm font-semibold text-gray-700">
-                    Confirm Password
+                    Confirmer le mot de passe
                   </Text>
                   <TextInput
                     className="rounded-md border border-gray-300 bg-white px-md py-md text-base"
-                    placeholder="Confirm your password"
+                    placeholder="Confirmez votre mot de passe"
                     placeholderTextColor="#9E9E9E"
                     value={confirmPassword}
                     onChangeText={setConfirmPassword}
@@ -109,15 +113,20 @@ export default function SignUp() {
                 {/* Terms and Conditions */}
                 <View className="mt-sm flex-row items-start">
                   <Text className="flex-1 text-xs text-gray-600">
-                    By signing up, you agree to our{' '}
-                    <Text className="font-semibold text-secondary">Terms of Service</Text> and{' '}
-                    <Text className="font-semibold text-secondary">Privacy Policy</Text>
+                    En vous inscrivant, vous acceptez nos{' '}
+                    <Text className="font-semibold text-secondary">
+                      Conditions d&apos;utilisation
+                    </Text>{' '}
+                    et notre{' '}
+                    <Text className="font-semibold text-secondary">
+                      Politique de confidentialité
+                    </Text>
                   </Text>
                 </View>
 
                 {/* Sign Up Button */}
                 <Button
-                  title="Sign Up"
+                  title="S'inscrire"
                   variant="primary"
                   size="lg"
                   onPress={handleSignUp}
@@ -127,16 +136,16 @@ export default function SignUp() {
                 {/* Divider */}
                 <View className="my-lg flex-row items-center">
                   <View className="h-[1px] flex-1 bg-gray-300" />
-                  <Text className="mx-md text-gray-500">or</Text>
+                  <Text className="mx-md text-gray-500">ou</Text>
                   <View className="h-[1px] flex-1 bg-gray-300" />
                 </View>
 
                 {/* Login Link */}
                 <View className="mb-xl flex-row justify-center">
-                  <Text className="text-gray-600">Already have an account? </Text>
+                  <Text className="text-gray-600">Déjà un compte ? </Text>
                   <Link href="/login" asChild>
                     <TouchableOpacity>
-                      <Text className="font-semibold text-accent">Login</Text>
+                      <Text className="font-semibold text-accent">Se connecter</Text>
                     </TouchableOpacity>
                   </Link>
                 </View>

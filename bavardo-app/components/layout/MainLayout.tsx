@@ -1,10 +1,42 @@
+import { Ionicons } from '@expo/vector-icons';
 import { Link, usePathname } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type MainLayoutProps = {
   children: React.ReactNode;
 };
+
+type TabItemProps = {
+  href: '/home' | '/messages' | '/calendar' | '/games';
+  label: string;
+  iconName: keyof typeof Ionicons.glyphMap;
+  activeIconName: keyof typeof Ionicons.glyphMap;
+  tabKey: string;
+  activeTab: string;
+};
+
+function TabItem({ href, label, iconName, activeIconName, tabKey, activeTab }: TabItemProps) {
+  const isActive = activeTab === tabKey;
+  return (
+    <Link href={href} asChild>
+      <TouchableOpacity className="flex-1 items-center py-md">
+        {isActive && <View className="mb-xs h-[3px] w-10 rounded-full bg-accent" />}
+        <Ionicons
+          name={isActive ? activeIconName : iconName}
+          size={28}
+          color={isActive ? '#F1844F' : '#4A897A'}
+        />
+        <Text
+          className={`mt-xs text-sm font-semibold ${isActive ? 'text-accent' : 'text-secondary'}`}>
+          {label}
+        </Text>
+      </TouchableOpacity>
+    </Link>
+  );
+}
 
 export default function MainLayout({ children }: MainLayoutProps) {
   const pathname = usePathname();
@@ -13,7 +45,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
-    }, 60000); // Update every minute
+    }, 60000);
 
     return () => clearInterval(timer);
   }, []);
@@ -53,72 +85,70 @@ export default function MainLayout({ children }: MainLayoutProps) {
   const activeTab = getActiveTab();
 
   return (
-    <View className="flex-1 bg-background">
+    <SafeAreaView className="flex-1 bg-primary">
+      <StatusBar style="light" />
+
       {/* Header */}
       <View className="flex-row items-center justify-between bg-primary px-lg py-md">
         <View className="flex-row items-center gap-sm">
-          <View className="h-8 w-8 items-center justify-center rounded-sm bg-white">
-            <Text className="text-lg font-bold text-primary">🐢</Text>
+          <View className="h-10 w-10 items-center justify-center rounded-md bg-white">
+            <Text className="text-xl font-bold text-primary">🐢</Text>
           </View>
-          <Text className="text-xl font-bold text-white">BAVARDO</Text>
+          <Text className="text-2xl font-bold text-white">BAVARDO</Text>
         </View>
-        <View className="items-end">
-          <Text className="text-sm text-white">{getCurrentDate()}</Text>
-          <Text className="text-lg font-semibold text-white">{getCurrentTime()}</Text>
+        <View className="flex-row items-center gap-md">
+          <View className="items-end">
+            <Text className="text-base text-white">{getCurrentDate()}</Text>
+            <Text className="text-xl font-semibold text-white">{getCurrentTime()}</Text>
+          </View>
+          <Link href="/notifications-test" asChild>
+            <TouchableOpacity className="items-center justify-center rounded-md bg-white/20 p-sm">
+              <Ionicons name="notifications-outline" size={22} color="white" />
+            </TouchableOpacity>
+          </Link>
         </View>
       </View>
 
       {/* Content */}
-      <View className="flex-1">{children}</View>
+      <View className="flex-1 bg-background">{children}</View>
 
       {/* Bottom Navigation */}
-      <View className="border-background-dark border-t-2 bg-background">
-        <View className="flex-row justify-around gap-sm px-md py-sm">
-          {/* Accueil */}
-          <Link href="/home" asChild>
-            <TouchableOpacity
-              className={`flex-1 items-center justify-center rounded-xl py-md ${
-                activeTab === 'home' ? 'bg-accent' : 'bg-secondary'
-              }`}>
-              <Text className="mb-xs text-3xl text-white">🏠</Text>
-              <Text className="text-base font-semibold text-white">Accueil</Text>
-            </TouchableOpacity>
-          </Link>
-
-          {/* Messagerie */}
-          <Link href="/messages" asChild>
-            <TouchableOpacity
-              className={`flex-1 items-center justify-center rounded-xl py-md ${
-                activeTab === 'messages' ? 'bg-accent' : 'bg-secondary'
-              }`}>
-              <Text className="mb-xs text-3xl text-white">💬</Text>
-              <Text className="text-base font-semibold text-white">Messagerie</Text>
-            </TouchableOpacity>
-          </Link>
-
-          {/* Agenda */}
-          <Link href="/calendar" asChild>
-            <TouchableOpacity
-              className={`flex-1 items-center justify-center rounded-xl py-md ${
-                activeTab === 'agenda' ? 'bg-accent' : 'bg-secondary'
-              }`}>
-              <Text className="mb-xs text-3xl text-white">📅</Text>
-              <Text className="text-base font-semibold text-white">Agenda</Text>
-            </TouchableOpacity>
-          </Link>
-
-          {/* Jeux */}
-          <Link href="/games" asChild>
-            <TouchableOpacity
-              className={`flex-1 items-center justify-center rounded-xl py-md ${
-                activeTab === 'games' ? 'bg-accent' : 'bg-secondary'
-              }`}>
-              <Text className="mb-xs text-3xl text-white">🎲</Text>
-              <Text className="text-base font-semibold text-white">Jeux</Text>
-            </TouchableOpacity>
-          </Link>
+      <View className="border-t border-gray-200 bg-white">
+        <View className="flex-row">
+          <TabItem
+            href="/home"
+            label="Accueil"
+            iconName="home-outline"
+            activeIconName="home"
+            tabKey="home"
+            activeTab={activeTab}
+          />
+          <TabItem
+            href="/messages"
+            label="Messagerie"
+            iconName="chatbubbles-outline"
+            activeIconName="chatbubbles"
+            tabKey="messages"
+            activeTab={activeTab}
+          />
+          <TabItem
+            href="/calendar"
+            label="Agenda"
+            iconName="calendar-outline"
+            activeIconName="calendar"
+            tabKey="agenda"
+            activeTab={activeTab}
+          />
+          <TabItem
+            href="/games"
+            label="Jeux"
+            iconName="game-controller-outline"
+            activeIconName="game-controller"
+            tabKey="games"
+            activeTab={activeTab}
+          />
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }

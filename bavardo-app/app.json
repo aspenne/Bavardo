@@ -8,18 +8,24 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/bavardo_1024.png"
     },
-    "plugins": ["expo-router", "expo-font", "expo-audio", "expo-speech-recognition"],
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "expo-audio",
+      "expo-speech-recognition",
+      "expo-notifications"
+    ],
     "experiments": {
       "typedRoutes": true,
       "tsconfigPaths": true
     },
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/bavardo_1024.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/bavardo_1024.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -29,14 +35,24 @@
       "bundleIdentifier": "com.aksel.michelo.bavardo",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
+      },
+      "splash": {
+        "image": "./assets/bavardo_1024.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff"
       }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/bavardo_1024.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.aksel.michelo.bavardo"
+      "package": "com.aksel.michelo.bavardo",
+      "splash": {
+        "image": "./assets/bavardo_1024.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff"
+      }
     },
     "extra": {
       "router": {},

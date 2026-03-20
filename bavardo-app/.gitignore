@@ -17,6 +17,10 @@ expo-env.d.ts
 ios
 android
 
+# Environment
+.env
+.env.local
+
 # macOS
 .DS_Store
 

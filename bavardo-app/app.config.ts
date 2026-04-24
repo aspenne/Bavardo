@@ -63,6 +63,7 @@ const config: ExpoConfig = {
   extra: {
     router: {},
     geminiApiKey: process.env.GEMINI_API_KEY,
+    apiBaseUrl: process.env.API_BASE_URL ?? 'http://10.71.135.213:8000',
     eas: {
       projectId: '7160fff0-eb61-42c6-8f77-50e62f6ce3d9',
     },

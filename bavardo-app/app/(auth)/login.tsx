@@ -1,6 +1,7 @@
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   Text,
@@ -11,16 +12,25 @@ import {
 
 import { Container } from '@/components/layout/Container';
 import { Button } from '@/components/ui/Button';
+import { useAuthStore } from '@/store/useAuthStore';
 
 export default function Login() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { login, isLoading, error } = useAuthStore();
 
-  const handleLogin = () => {
-    // TODO: Implement login logic
-    console.log('Login with:', email, password);
-    router.replace('/home');
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Erreur', 'Veuillez remplir tous les champs.');
+      return;
+    }
+    try {
+      await login(email, password);
+      router.replace('/home');
+    } catch {
+      // L'erreur est déjà dans le store
+    }
   };
 
   return (
@@ -80,12 +90,18 @@ export default function Login() {
                 </TouchableOpacity>
               </Link>
 
+              {/* Error Message */}
+              {error && (
+                <Text className="text-center text-sm text-red-500">{error}</Text>
+              )}
+
               {/* Login Button */}
               <Button
-                title="Se connecter"
+                title={isLoading ? 'Connexion...' : 'Se connecter'}
                 variant="primary"
                 size="lg"
                 onPress={handleLogin}
+                disabled={isLoading}
                 className="mt-md"
               />
 

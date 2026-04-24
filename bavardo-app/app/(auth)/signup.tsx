@@ -1,6 +1,7 @@
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -12,6 +13,7 @@ import {
 
 import { Container } from '@/components/layout/Container';
 import { Button } from '@/components/ui/Button';
+import { useAuthStore } from '@/store/useAuthStore';
 
 export default function SignUp() {
   const [name, setName] = useState('');
@@ -19,15 +21,25 @@ export default function SignUp() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const navigator = useRouter();
+  const { register, isLoading, error } = useAuthStore();
 
-  const handleSignUp = () => {
-    // TODO: Implement signup logic
+  const handleSignUp = async () => {
     if (password !== confirmPassword) {
-      console.log('Les mots de passe ne correspondent pas');
+      Alert.alert('Erreur', 'Les mots de passe ne correspondent pas.');
       return;
     }
-    console.log('Sign up with:', name, email, password);
-    navigator.push('/home');
+    if (!name || !email || !password) {
+      Alert.alert('Erreur', 'Veuillez remplir tous les champs.');
+      return;
+    }
+    const [firstName, ...rest] = name.trim().split(' ');
+    const lastName = rest.join(' ') || '';
+    try {
+      await register(email, password, firstName, lastName);
+      navigator.replace('/home');
+    } catch {
+      // L'erreur est dans le store
+    }
   };
 
   return (
@@ -124,12 +136,18 @@ export default function SignUp() {
                   </Text>
                 </View>
 
+                {/* Error Message */}
+                {error && (
+                  <Text className="text-center text-sm text-red-500">{error}</Text>
+                )}
+
                 {/* Sign Up Button */}
                 <Button
-                  title="S'inscrire"
+                  title={isLoading ? 'Inscription...' : "S'inscrire"}
                   variant="primary"
                   size="lg"
                   onPress={handleSignUp}
+                  disabled={isLoading}
                   className="mt-md"
                 />
 

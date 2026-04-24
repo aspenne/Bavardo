@@ -3,7 +3,6 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Text,
@@ -95,11 +94,10 @@ export default function VerifyCode() {
     try {
       const result = await verifyResetCode(email || '', fullCode);
       if (result.success) {
-        Alert.alert(
-          'Succès',
-          'Votre code a été vérifié. Vous pouvez maintenant réinitialiser votre mot de passe.',
-          [{ text: 'OK', onPress: () => router.replace('/login') }]
-        );
+        router.replace({
+          pathname: '/reset-password',
+          params: { email: email || '', code: fullCode },
+        });
       } else {
         setError('Code incorrect. Veuillez réessayer.');
       }

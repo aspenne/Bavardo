@@ -58,14 +58,18 @@ export default function ConversationScreen() {
   const getMessages = useMessageStore((s) => s.getMessages);
   const sendMessage = useMessageStore((s) => s.sendMessage);
   const markAsRead = useMessageStore((s) => s.markAsRead);
+  const fetchMessages = useMessageStore((s) => s.fetchMessages);
 
   const conversation = conversations.find((c) => c.id === id);
   const messages = getMessages(id || '');
 
-  // Mark as read when opening
+  // Charger les messages depuis l'API et marquer comme lus
   useEffect(() => {
-    if (id) markAsRead(id);
-  }, [id, markAsRead]);
+    if (id) {
+      fetchMessages(id);
+      markAsRead(id);
+    }
+  }, [id, fetchMessages, markAsRead]);
 
   // Build list with date separators
   const listItems: ListItem[] = useMemo(() => {

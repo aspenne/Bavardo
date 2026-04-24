@@ -3,7 +3,7 @@ import { useRef, useState } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 
 import { Card } from '@/components/ui/Card';
-import { ask, isReady } from '@/services/ai';
+import { API_BASE_URL } from '@/services/api';
 
 let Speech: typeof import('expo-speech') | null = null;
 let ExpoSpeechRecognitionModule:
@@ -21,6 +21,22 @@ try {
   console.warn('Native speech modules not available (Expo Go)');
 }
 
+/** Appelle le backend Bavardo pour obtenir une réponse IA */
+async function askBackend(message: string): Promise<string> {
+  const response = await fetch(`${API_BASE_URL}/api/ask/ai/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Erreur serveur ${response.status}`);
+  }
+
+  const data = await response.json();
+  return data.response;
+}
+
 export default function Home() {
   const [recognizing, setRecognizing] = useState(false);
   const [transcript, setTranscript] = useState('');
@@ -28,10 +44,11 @@ export default function Home() {
   const [thinking, setThinking] = useState(false);
   const pendingTranscript = useRef('');
 
-  useSpeechRecognitionEvent('start', () => setRecognizing(true));
+  useSpeechRecognitionEvent('start', () =>  {
+    setRecognizing(true);
+  });
   useSpeechRecognitionEvent('end', () => {
     setRecognizing(false);
-    // When speech recognition ends, send the final transcript to AI
     if (pendingTranscript.current) {
       sendToAI(pendingTranscript.current);
     }
@@ -48,16 +65,14 @@ export default function Home() {
   });
 
   const sendToAI = async (userMessage: string) => {
-    if (!userMessage.trim() || !isReady()) return;
+    if (!userMessage.trim()) return;
 
     setThinking(true);
     setAiResponse('');
 
     try {
-      const response = await ask(userMessage);
+      const response = await askBackend(userMessage);
       setAiResponse(response);
-
-      // Auto-read the response aloud
       speakText(response);
     } catch (error) {
       console.error('AI error:', error);
@@ -70,29 +85,29 @@ export default function Home() {
     }
   };
 
-  const handleStart = async () => {
-    if (!ExpoSpeechRecognitionModule) return;
+  const handlePressIn = async () => {
+    if (!ExpoSpeechRecognitionModule || thinking) return;
     const result = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
     if (!result.granted) {
       console.warn('Permissions not granted', result);
       return;
     }
-    // Reset for new interaction
     setTranscript('');
     pendingTranscript.current = '';
     ExpoSpeechRecognitionModule.start({
       lang: 'fr-FR',
       interimResults: true,
-      continuous: false,
+      continuous: true,
     });
   };
 
-  const handleMicPress = () => {
-    if (recognizing) {
-      ExpoSpeechRecognitionModule?.stop();
-    } else {
-      handleStart();
+  const handlePressOut = () => {
+    if (!ExpoSpeechRecognitionModule) return;
+    // Dernier transcript même s'il n'est pas "final"
+    if (!pendingTranscript.current && transcript) {
+      pendingTranscript.current = transcript;
     }
+    ExpoSpeechRecognitionModule.stop();
   };
 
   const speakText = (text: string) => {
@@ -113,7 +128,7 @@ export default function Home() {
   const getStatusText = () => {
     if (thinking) return 'Je réfléchis...';
     if (recognizing) return 'Je vous écoute...';
-    return 'Appuyez pour parler';
+    return 'Maintenez pour parler';
   };
 
   return (
@@ -136,7 +151,8 @@ export default function Home() {
 
         {/* Mic Button */}
         <TouchableOpacity
-          onPress={handleMicPress}
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
           activeOpacity={0.7}
           disabled={thinking}
           className={`h-28 w-28 items-center justify-center rounded-full shadow-lg ${

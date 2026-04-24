@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 import CalendarGrid, { formatDateKey } from '@/components/calendar/CalendarGrid';
@@ -31,7 +31,12 @@ export default function Calendar() {
   const [modalVisible, setModalVisible] = useState(false);
   const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
 
-  const { events, addEvent, updateEvent, deleteEvent, getEventsForDate } = useEventStore();
+  const { events, addEvent, updateEvent, deleteEvent, getEventsForDate, fetchEvents } =
+    useEventStore();
+
+  useEffect(() => {
+    fetchEvents();
+  }, [fetchEvents]);
 
   const monthName = MONTHS[currentDate.getMonth()];
   const year = currentDate.getFullYear();

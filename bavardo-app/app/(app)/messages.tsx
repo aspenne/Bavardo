@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { FlatList, Text, TextInput, View } from 'react-native';
 
 import { ConversationItem } from '@/components/messages/ConversationItem';
@@ -10,6 +10,11 @@ export default function Messages() {
   const router = useRouter();
   const [search, setSearch] = useState('');
   const getConversations = useMessageStore((s) => s.getConversations);
+  const fetchConversations = useMessageStore((s) => s.fetchConversations);
+
+  useEffect(() => {
+    fetchConversations();
+  }, [fetchConversations]);
 
   const conversations = useMemo(() => {
     const all = getConversations();

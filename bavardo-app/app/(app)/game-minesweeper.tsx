@@ -99,7 +99,7 @@ export default function GameMinesweeper() {
     [time, setScore],
   );
 
-  const reveal = (r: number, c: number, b: CellState[][]): CellState[][] {
+  const reveal = (r: number, c: number, b: CellState[][]): CellState[][] => {
     if (b[r][c].revealed || b[r][c].flagged) return b;
     b[r][c].revealed = true;
 

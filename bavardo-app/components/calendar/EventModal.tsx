@@ -1,5 +1,15 @@
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { useEffect, useState } from 'react';
-import { Alert, Modal, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  Modal,
+  Platform,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import { CalendarEvent, EventColor } from '@/types/event';
 
@@ -33,6 +43,8 @@ export default function EventModal({
   const [time, setTime] = useState('');
   const [description, setDescription] = useState('');
   const [color, setColor] = useState<EventColor>('blue');
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
 
   const isEditing = !!initialData;
 
@@ -43,8 +55,66 @@ export default function EventModal({
       setTime(initialData?.time || '');
       setDescription(initialData?.description || '');
       setColor(initialData?.color || 'blue');
+      setShowDatePicker(false);
+      setShowTimePicker(false);
     }
   }, [visible, initialData, defaultDate]);
+
+  const parseDateValue = (): Date => {
+    if (date) {
+      const [y, m, d] = date.split('-').map(Number);
+      return new Date(y, m - 1, d);
+    }
+    return new Date();
+  };
+
+  const parseTimeValue = (): Date => {
+    const d = new Date();
+    if (time) {
+      const [h, m] = time.split(':').map(Number);
+      d.setHours(h, m, 0, 0);
+    }
+    return d;
+  };
+
+  const formatDateDisplay = (dateStr: string): string => {
+    if (!dateStr) return '';
+    const [y, m, d] = dateStr.split('-').map(Number);
+    const months = [
+      'janvier',
+      'février',
+      'mars',
+      'avril',
+      'mai',
+      'juin',
+      'juillet',
+      'août',
+      'septembre',
+      'octobre',
+      'novembre',
+      'décembre',
+    ];
+    return `${d} ${months[m - 1]} ${y}`;
+  };
+
+  const onDateChange = (_event: DateTimePickerEvent, selectedDate?: Date) => {
+    if (Platform.OS === 'android') setShowDatePicker(false);
+    if (selectedDate) {
+      const y = selectedDate.getFullYear();
+      const m = String(selectedDate.getMonth() + 1).padStart(2, '0');
+      const d = String(selectedDate.getDate()).padStart(2, '0');
+      setDate(`${y}-${m}-${d}`);
+    }
+  };
+
+  const onTimeChange = (_event: DateTimePickerEvent, selectedDate?: Date) => {
+    if (Platform.OS === 'android') setShowTimePicker(false);
+    if (selectedDate) {
+      const h = String(selectedDate.getHours()).padStart(2, '0');
+      const m = String(selectedDate.getMinutes()).padStart(2, '0');
+      setTime(`${h}:${m}`);
+    }
+  };
 
   const handleSave = () => {
     if (!title.trim()) {
@@ -93,26 +163,63 @@ export default function EventModal({
 
             {/* Date */}
             <View className="mb-4">
-              <Text className="mb-1 text-sm font-semibold text-gray-700">Date * (AAAA-MM-JJ)</Text>
-              <TextInput
-                className="rounded-lg border border-gray-300 bg-white px-3 py-3 text-base"
-                placeholder="2026-02-15"
-                placeholderTextColor="#9E9E9E"
-                value={date}
-                onChangeText={setDate}
-              />
+              <Text className="mb-1 text-sm font-semibold text-gray-700">Date *</Text>
+              <TouchableOpacity
+                onPress={() => setShowDatePicker(!showDatePicker)}
+                className="rounded-lg border border-gray-300 bg-white px-3 py-3">
+                <Text className={`text-base ${date ? 'text-gray-900' : 'text-gray-400'}`}>
+                  {date ? formatDateDisplay(date) : 'Choisir une date'}
+                </Text>
+              </TouchableOpacity>
+              {showDatePicker && (
+                <View className="mt-2 overflow-hidden rounded-lg bg-gray-50">
+                  <DateTimePicker
+                    value={parseDateValue()}
+                    mode="date"
+                    display={Platform.OS === 'ios' ? 'inline' : 'default'}
+                    onChange={onDateChange}
+                    locale="fr-FR"
+                  />
+                  {Platform.OS === 'ios' && (
+                    <TouchableOpacity
+                      onPress={() => setShowDatePicker(false)}
+                      className="items-center border-t border-gray-200 py-2">
+                      <Text className="text-base font-semibold text-accent">Valider</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              )}
             </View>
 
             {/* Time */}
             <View className="mb-4">
-              <Text className="mb-1 text-sm font-semibold text-gray-700">Heure (HH:mm)</Text>
-              <TextInput
-                className="rounded-lg border border-gray-300 bg-white px-3 py-3 text-base"
-                placeholder="14:30"
-                placeholderTextColor="#9E9E9E"
-                value={time}
-                onChangeText={setTime}
-              />
+              <Text className="mb-1 text-sm font-semibold text-gray-700">Heure</Text>
+              <TouchableOpacity
+                onPress={() => setShowTimePicker(!showTimePicker)}
+                className="rounded-lg border border-gray-300 bg-white px-3 py-3">
+                <Text className={`text-base ${time ? 'text-gray-900' : 'text-gray-400'}`}>
+                  {time || 'Choisir une heure'}
+                </Text>
+              </TouchableOpacity>
+              {showTimePicker && (
+                <View className="mt-2 overflow-hidden rounded-lg bg-gray-50">
+                  <DateTimePicker
+                    value={parseTimeValue()}
+                    mode="time"
+                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                    onChange={onTimeChange}
+                    locale="fr-FR"
+                    minuteInterval={5}
+                  />
+                  {Platform.OS === 'ios' && (
+                    <TouchableOpacity
+                      onPress={() => setShowTimePicker(false)}
+                      className="items-center border-t border-gray-200 py-2">
+                      <Text className="text-base font-semibold text-accent">Valider</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              )}
             </View>
 
             {/* Description */}

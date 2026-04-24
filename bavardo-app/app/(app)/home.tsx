@@ -1,25 +1,14 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRef, useState } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
+import * as Speech from 'expo-speech';
+import {
+  ExpoSpeechRecognitionModule,
+  useSpeechRecognitionEvent,
+} from "expo-speech-recognition";
 
 import { Card } from '@/components/ui/Card';
 import { API_BASE_URL } from '@/services/api';
-
-let Speech: typeof import('expo-speech') | null = null;
-let ExpoSpeechRecognitionModule:
-  | typeof import('expo-speech-recognition').ExpoSpeechRecognitionModule
-  | null = null;
-let useSpeechRecognitionEvent: typeof import('expo-speech-recognition').useSpeechRecognitionEvent =
-  (() => {}) as any;
-
-try {
-  Speech = require('expo-speech');
-  const speechRecognition = require('expo-speech-recognition');
-  ExpoSpeechRecognitionModule = speechRecognition.ExpoSpeechRecognitionModule;
-  useSpeechRecognitionEvent = speechRecognition.useSpeechRecognitionEvent;
-} catch {
-  console.warn('Native speech modules not available (Expo Go)');
-}
 
 /** Appelle le backend Bavardo pour obtenir une réponse IA */
 async function askBackend(message: string): Promise<string> {

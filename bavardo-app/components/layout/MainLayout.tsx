@@ -101,11 +101,6 @@ export default function MainLayout({ children }: MainLayoutProps) {
             <Text className="text-base text-white">{getCurrentDate()}</Text>
             <Text className="text-xl font-semibold text-white">{getCurrentTime()}</Text>
           </View>
-          <Link href="/notifications-test" asChild>
-            <TouchableOpacity className="items-center justify-center rounded-md bg-white/20 p-sm">
-              <Ionicons name="notifications-outline" size={22} color="white" />
-            </TouchableOpacity>
-          </Link>
         </View>
       </View>
 
